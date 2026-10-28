@@ -413,3 +413,51 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   .home-footer { min-height: 55px; }
   .home-footer > span:nth-child(2) { display: none; }
 }
+
+.brand-caption, .section-eyebrow, .field-label, .game-kicker, .hero-eyebrow,
+.hero-index, .home-game-event, .home-art-year, .home-footer,
+.board-top-labels > div > span, .board-bottom-labels > div > span,
+.player-clock, .eval-side, .ply-position, .moves-total, .move-number,
+.badge-name, .badge-glyph, .badge-compact .badge-glyph,
+.analysis-error button, .legend-name, .graph-labels,
+.graph-footer, .suggestion-label, .workspace-footer, .online-game-meta,
+.result-tag, .home-footer .brand-caption, .home-footer > span:last-child {
+  font-size: 12px;
+}
+
+.top-nav button, .header-cta, .engine-pill, .source-tabs button,
+.helper-text, .archive-picker select, .online-game-main, .inline-status,
+.error-text, .drop-zone strong, .drop-zone span, .pgn-input,
+.primary-button, .game-tags, .game-link, .board-top-labels strong,
+.board-bottom-labels strong, .board-hint, .move-item, .moves-placeholder,
+.analysis-error, .position-summary, .graph-loading, .commentary-move,
+.commentary p, .suggestion-card > span:last-child, .commentary-empty,
+.toast, .hero-secondary, .hero-import-link, .hero-proof,
+.home-section-heading p, .home-section-heading > button,
+.home-game-players, .home-game-result, .game-learning p {
+  font-size: 13px;
+}
+
+.input-row input, .home-hero-copy > p {
+  font-size: 16px;
+}
+
+.pgn-input { font-size: 14px; }
+
+.feature-item strong, .home-game-details > strong {
+  font-size: 14px;
+}
+
+.home-footer .brand-name { font-size: 15px; }
+
+.feature-item > div > span {
+  font-size: 12px;
+}
+
+@media (max-width: 620px) {
+  .brand-caption, .home-footer .brand-caption { font-size: 10px; }
+  .top-nav button { font-size: 11px; }
+  .header-cta { font-size: 10px; }
+  .home-hero-copy > p { font-size: 15px; }
+  .home-section-heading p { font-size: 12px; }
+}

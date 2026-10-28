@@ -228,9 +228,6 @@ function Chessboard({ fen, lastMove, nextMove, engineMove, moveMarker, onSquareC
     <div className="board-frame">
       <svg className="chessboard" viewBox="0 0 800 800" role="grid" aria-label="Chessboard">
         <defs>
-          <filter id="piece-shadow" x="-30%" y="-30%" width="160%" height="160%">
-            <feDropShadow dx="0" dy="2" stdDeviation="1" floodColor="#000" floodOpacity=".28" />
-          </filter>
           <marker id="engine-arrow-head" markerWidth="20" markerHeight="20" refX="15" refY="10" orient="auto" markerUnits="userSpaceOnUse">
             <path d="M0,0 L0,20 L20,10 Z" className="engine-arrow-head" />
           </marker>
@@ -277,7 +274,6 @@ function Chessboard({ fen, lastMove, nextMove, engineMove, moveMarker, onSquareC
                     y={row * 100 + 77}
                     textAnchor="middle"
                     className={`chess-piece ${piece.color === "w" ? "piece-white" : "piece-black"}`}
-                    filter="url(#piece-shadow)"
                   >
                     {PIECES[piece.type]}
                   </text>

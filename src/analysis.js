@@ -1,4 +1,5 @@
 import { Chess } from "chess.js";
+import { getBookMoveFlags } from "./opening-book.js";
 
 const ENGINE_URL = new URL(
   "../vendor/stockfish/stockfish-19-lite-single.js",
@@ -240,6 +241,7 @@ function terminalEvaluation(fen) {
 export function evaluateMoves(moves, positions, initialFen) {
   const chess = new Chess();
   chess.load(initialFen);
+  const bookMoveFlags = getBookMoveFlags(moves, initialFen);
   return moves.map((move, index) => {
     const before = positions[index];
     const after = positions[index + 1];
@@ -262,18 +264,20 @@ export function evaluateMoves(moves, positions, initialFen) {
         bestFacts?.check ||
         bestFacts?.promotion ||
         (bestFacts?.captured && bestFacts.captured !== "pawn"));
-    const category = classifyMove({
-      matchesBest,
-      loss,
-      missedTacticalOpportunity,
-      expectedCp,
-      playedCp,
-      playedUci,
-      candidates: before.candidates,
-      reply: after.candidates[0],
-      playedCandidate,
-      beforeFen: move.beforeFen,
-    });
+    const category = bookMoveFlags[index]
+      ? "Book"
+      : classifyMove({
+          matchesBest,
+          loss,
+          missedTacticalOpportunity,
+          expectedCp,
+          playedCp,
+          playedUci,
+          candidates: before.candidates,
+          reply: after.candidates[0],
+          playedCandidate,
+          beforeFen: move.beforeFen,
+        });
     const moverEvalWhite = whiteToMove ? playedCp : -playedCp;
 
     chess.move({

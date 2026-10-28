@@ -6,18 +6,12 @@ import { historicGames } from "./src/games.js";
 import { historicEvaluations } from "./src/historic-evaluations.js";
 
 const PIECES = {
-  wk: "♔",
-  wq: "♕",
-  wr: "♖",
-  wb: "♗",
-  wn: "♘",
-  wp: "♙",
-  bk: "♚",
-  bq: "♛",
-  br: "♜",
-  bb: "♝",
-  bn: "♞",
-  bp: "♟",
+  k: "♚",
+  q: "♛",
+  r: "♜",
+  b: "♝",
+  n: "♞",
+  p: "♟",
 };
 
 const BADGES = {
@@ -235,7 +229,7 @@ function Chessboard({ fen, lastMove, nextMove, engineMove, moveMarker, onSquareC
       <svg className="chessboard" viewBox="0 0 800 800" role="grid" aria-label="Chessboard">
         <defs>
           <filter id="piece-shadow" x="-30%" y="-30%" width="160%" height="160%">
-            <feDropShadow dx="0" dy="4" stdDeviation="3" floodColor="#000" floodOpacity=".42" />
+            <feDropShadow dx="0" dy="2" stdDeviation="1" floodColor="#000" floodOpacity=".28" />
           </filter>
           <marker id="engine-arrow-head" markerWidth="20" markerHeight="20" refX="15" refY="10" orient="auto" markerUnits="userSpaceOnUse">
             <path d="M0,0 L0,20 L20,10 Z" className="engine-arrow-head" />
@@ -285,7 +279,7 @@ function Chessboard({ fen, lastMove, nextMove, engineMove, moveMarker, onSquareC
                     className={`chess-piece ${piece.color === "w" ? "piece-white" : "piece-black"}`}
                     filter="url(#piece-shadow)"
                   >
-                    {PIECES[`${piece.color}${piece.type}`]}
+                    {PIECES[piece.type]}
                   </text>
                 )}
               </g>
@@ -437,99 +431,85 @@ function Commentary({ move, loading }) {
 }
 
 function HomeScreen({ onStartReview, onImportPgn, onChooseGame }) {
-  const heroPieces = {
-    "0-0": "♜",
-    "0-3": "♛",
-    "0-4": "♚",
-    "0-7": "♜",
-    "1-1": "♟",
-    "1-4": "♟",
-    "1-6": "♟",
-    "2-2": "♞",
-    "2-5": "♝",
-    "3-3": "♟",
-    "3-6": "♙",
-    "4-2": "♙",
-    "4-5": "♙",
-    "5-3": "♘",
-    "5-6": "♙",
-    "6-1": "♙",
-    "6-5": "♙",
-    "7-0": "♖",
-    "7-3": "♕",
-    "7-4": "♔",
-    "7-7": "♖",
-  };
+  const featuredGame = historicGames.find((game) => game.id === "immortal");
+  const heroChess = new Chess();
+  heroChess.loadPgn(featuredGame.pgn);
+  const featuredMoves = heroChess.history({ verbose: true });
+  const turningPointIndex = 42;
+  const turningPoint = featuredMoves[turningPointIndex];
+  heroChess.reset();
+  featuredMoves.slice(0, turningPointIndex + 1).forEach(({ from, to, promotion }) => {
+    heroChess.move({ from, to, promotion });
+  });
+  const heroPosition = heroChess.board();
+  const highlightedSquares = new Set([turningPoint.from, turningPoint.to]);
+  const turningPointMoveNumber = Math.floor(turningPointIndex / 2) + 1;
   const games = historicGames;
 
   return (
     <main className="home-page">
       <section className="home-hero">
         <div className="home-hero-copy">
-          <div className="hero-eyebrow"><span className="status-light" /> YOUR NEXT MOVE, UNDERSTOOD</div>
-          <h1>Every move<br />has a <span>story.</span></h1>
-          <p>Find the moments that mattered. Review any game with Stockfish-powered analysis, clear move-by-move insights, and absolutely no guesswork.</p>
+          <div className="hero-eyebrow"><span className="status-light" /> STOCKFISH CHESS REVIEW</div>
+          <h1>Understand the<br /><span>moves that matter.</span></h1>
+          <p>Analyze a game move by move, compare your choices with Stockfish, and learn from each position.</p>
           <div className="hero-actions">
-            <button className="hero-primary" onClick={onStartReview}>Start a review <Icon name="arrow" size={17} /></button>
-            <button className="hero-secondary" onClick={() => document.getElementById("home-library")?.scrollIntoView({ behavior: "smooth" })}>Explore classic games <span>↓</span></button>
+            <button className="hero-primary" onClick={onStartReview}>Review a game <Icon name="arrow" size={17} /></button>
+            <button className="hero-secondary" onClick={() => document.getElementById("home-library")?.scrollIntoView({ behavior: "smooth" })}>Browse historic games <span>↓</span></button>
           </div>
-          <button className="hero-import-link" onClick={onImportPgn}>Already have a PGN? <span>Import a game <Icon name="arrow" size={12} /></span></button>
-          <div className="hero-proof"><span className="proof-icons"><i>♟</i><i>♞</i><i>♝</i></span><span>Real engine. Real lines. Better chess.</span></div>
+          <button className="hero-import-link" onClick={onImportPgn}>Have a PGN? <span>Import it <Icon name="arrow" size={12} /></span></button>
+          <div className="hero-proof"><span className="proof-icons"><i>♟</i><i>♞</i><i>♝</i></span><span>Stockfish analysis. No account needed.</span></div>
         </div>
 
         <div className="hero-visual">
-          <div className="visual-orbit orbit-one" />
-          <div className="visual-orbit orbit-two" />
-          <div className="visual-coordinate coordinate-top">POSITION 24 · WHITE TO MOVE</div>
+          <div className="hero-orbit hero-orbit-one" />
+          <div className="hero-orbit hero-orbit-two" />
           <div className="hero-board-frame">
-            <div className="hero-board" aria-label="Decorative chess position">
+            <div className="hero-board" role="img" aria-label={`Position after ${turningPointMoveNumber}.${turningPoint.san} in Kasparov versus Topalov`}>
               {Array.from({ length: 64 }, (_, index) => {
                 const row = Math.floor(index / 8);
                 const col = index % 8;
-                const piece = heroPieces[`${row}-${col}`];
-                const white = piece && "♙♖♘♗♕♔".includes(piece);
-                const marked = (row === 3 && col === 6) || (row === 5 && col === 3);
+                const piece = heroPosition[row][col];
+                const square = `${"abcdefgh"[col]}${8 - row}`;
+                const glyph = piece ? PIECES[piece.type] : null;
                 return (
                   <div
-                    className={`hero-square ${(row + col) % 2 === 0 ? "hero-square-light" : "hero-square-dark"} ${marked ? "hero-square-marked" : ""}`}
-                    key={`${row}-${col}`}
+                    className={`hero-square ${(row + col) % 2 === 0 ? "hero-square-light" : "hero-square-dark"} ${highlightedSquares.has(square) ? "hero-square-marked" : ""}`}
+                    key={square}
                   >
-                    {piece && <span className={white ? "hero-piece-light" : "hero-piece-dark"}>{piece}</span>}
+                    {glyph && <span className={piece.color === "w" ? "hero-piece-light" : "hero-piece-dark"}>{glyph}</span>}
                   </div>
                 );
               })}
             </div>
-            <div className="board-eval-card">
-              <span className="eval-pulse" />
-              <span>ENGINE EVALUATION</span>
-              <strong>ADVANTAGE <small>WHITE</small></strong>
-              <div className="eval-card-track"><span /></div>
-            </div>
           </div>
-          <div className="visual-note note-top"><span>✦</span> THE TURNING POINT <strong>24. Rxd4!!</strong></div>
-          <div className="visual-note note-bottom"><span>↗</span> MAJOR TURNING POINT <strong>Winning advantage</strong></div>
-          <div className="visual-coordinate coordinate-bottom">ENGINE-POWERED <span>·</span> CLEAR EXPLANATIONS</div>
+          <div className="hero-callout hero-callout-turning-point">
+            <strong>The turning point: {turningPointMoveNumber}. {turningPoint.san}!</strong>
+          </div>
+          <div className="hero-callout hero-callout-advantage">
+            <strong>White has an advantage.</strong>
+          </div>
         </div>
 
         <div className="hero-index">01 <span>—</span> REVIEW STUDIO</div>
       </section>
 
       <section className="home-features" aria-label="Review features">
-        <div className="feature-item"><span className="feature-icon">♟</span><div><strong>Every position, analyzed</strong><span>Stockfish evaluates each move in your game.</span></div></div>
-        <div className="feature-item"><span className="feature-icon">⌁</span><div><strong>See where it turned</strong><span>Follow evaluation shifts across the whole game.</span></div></div>
-        <div className="feature-item"><span className="feature-icon">↗</span><div><strong>Your games, your way</strong><span>Import PGN files or fetch your Chess.com games.</span></div></div>
+        <div className="feature-item"><span className="feature-icon">♟</span><div><strong>Review every position</strong><span>See the engine's assessment and best move.</span></div></div>
+        <div className="feature-item"><span className="feature-icon">⌁</span><div><strong>Track the evaluation</strong><span>Spot where the balance of the game changed.</span></div></div>
+        <div className="feature-item"><span className="feature-icon">↗</span><div><strong>Use your own games</strong><span>Import a PGN or browse public Chess.com games.</span></div></div>
       </section>
 
       <section className="home-library" id="home-library">
         <div className="home-section-heading">
-          <div><div className="section-eyebrow"><span className="eyebrow-line" /> A GOOD PLACE TO BEGIN</div><h2>Classics, ready to replay.</h2><p>Three unforgettable games. Stockfish analysis already loaded.</p></div>
-          <button onClick={onStartReview}>Open review studio <Icon name="arrow" size={15} /></button>
+          <div><div className="section-eyebrow"><span className="eyebrow-line" /> HISTORIC GAMES</div><h2>Replay and learn.</h2><p>Choose a game to explore its moves and key lesson.</p></div>
+          <button onClick={onStartReview}>Review your own game <Icon name="arrow" size={15} /></button>
         </div>
         <div className="home-game-grid">
           {games.map((record, index) => (
             <button className="home-game-card" key={record.id} onClick={() => onChooseGame(record)}>
-              <span className={`home-game-art historic-art-${index + 1}`}>
-                <span>{record.id === "opera" ? "♞" : record.id === "immortal" ? "♛" : "♙"}</span>
+              <span className={`home-game-art historic-art-${(index % 3) + 1}`}>
+                <span>{["♞", "♛", "♙", "♜", "♝", "♟"][index % 6]}</span>
                 <span className="home-art-year">{record.event.split("·").at(-1).trim()}</span>
                 <span className="home-art-play"><Icon name="play" size={15} /></span>
               </span>
@@ -539,7 +519,7 @@ function HomeScreen({ onStartReview, onImportPgn, onChooseGame }) {
           ))}
         </div>
       </section>
-      <footer className="home-footer"><Brand /><span>Clear eyes. Better chess.</span><span>BUILT ON STOCKFISH.JS</span></footer>
+      <footer className="home-footer"><Brand /><span>PGN imports · public Chess.com games</span><span>STOCKFISH 19 LITE</span></footer>
     </main>
   );
 }
@@ -795,8 +775,8 @@ function App() {
             }}>Game library</button>
           </nav>
           <div className="header-right">
-            {activePage === "home" && <button className="header-cta" onClick={() => startReview("chesscom", true)}>Start a review <Icon name="arrow" size={14} /></button>}
-            <div className="engine-pill"><span className="status-light" /> STOCKFISH 19 · LITE</div>
+            {activePage === "home" && <button className="header-cta" onClick={() => startReview("chesscom", true)}>Review a game <Icon name="arrow" size={14} /></button>}
+            <div className="engine-pill"><span className="status-light" /> STOCKFISH 19 LITE</div>
           </div>
         </div>
       </header>
@@ -828,7 +808,7 @@ function App() {
                     </button>
                   </div>
                 </form>
-                <p className="helper-text">Browse recent public games. No sign-in needed.</p>
+                <p className="helper-text">Look up a username to browse their recent public games. No sign-in required.</p>
                 {archives.length > 0 && (
                   <div className="archive-picker">
                     <label className="field-label" htmlFor="archive">MONTHLY ARCHIVE</label>
@@ -895,13 +875,15 @@ function App() {
         <section className="review-area">
           <div className="game-heading">
             <div className="game-heading-copy">
-              <div className="game-kicker">{game.event || game.headers.Event || "GAME REVIEW"} <span className="kicker-dot">·</span> {game.headers.Date ?? "PGN import"}</div>
+              <div className="game-kicker">
+                {game.event || game.headers.Event || (game.moves.length ? "GAME REVIEW" : "READY TO REVIEW")}
+                {(game.headers.Date || game.headers.ECO) && <span className="kicker-dot"> · {[game.headers.Date, game.headers.ECO].filter(Boolean).join(" · ")}</span>}
+              </div>
               <h1>{displayName}</h1>
               <div className="game-tags">
-                <span className="result-tag">{game.headers.Result ?? game.result ?? "—"}</span>
-                <span>{game.headers.ECO ?? "Classical"}</span>
-                <span>{Math.ceil(game.moves.length / 2)} moves</span>
-                <span className="stockfish-tag"><span className="status-light" /> Stockfish analysis</span>
+                {(game.headers.Result || game.result) && <span className="result-tag">{game.headers.Result || game.result}</span>}
+                {game.moves.length > 0 && <span>{Math.ceil(game.moves.length / 2)} moves</span>}
+                {game.moves.length > 0 && <span className="stockfish-tag"><span className="status-light" /> Stockfish 19 Lite</span>}
               </div>
             </div>
             {game.url && (
@@ -915,8 +897,8 @@ function App() {
             <div className="board-section">
               <div className="board-top-labels">
                 <span className="player-token black-token">♚</span>
-                <div><strong>{game.headers.Black || "Black"}</strong><span>Rating {game.headers.BlackElo || "—"}</span></div>
-                <span className="player-clock">{game.headers.TimeControl || "GAME REVIEW"}</span>
+                <div><strong>{game.headers.Black || "Black"}</strong>{game.headers.BlackElo && <span>Rating {game.headers.BlackElo}</span>}</div>
+                {game.headers.TimeControl && <span className="player-clock">{game.headers.TimeControl}</span>}
               </div>
               <div className="board-and-eval">
                 <Chessboard
@@ -931,8 +913,8 @@ function App() {
               </div>
               <div className="board-bottom-labels">
                 <span className="player-token white-token">♔</span>
-                <div><strong>{game.headers.White || "White"}</strong><span>Rating {game.headers.WhiteElo || "—"}</span></div>
-                <span className="player-clock">{game.headers.TimeControl || "GAME REVIEW"}</span>
+                <div><strong>{game.headers.White || "White"}</strong>{game.headers.WhiteElo && <span>Rating {game.headers.WhiteElo}</span>}</div>
+                {game.headers.TimeControl && <span className="player-clock">{game.headers.TimeControl}</span>}
               </div>
               <div className="board-controls">
                 <div className="control-group">
@@ -957,8 +939,15 @@ function App() {
                   ? <>Played: <strong>{currentMove.san}</strong> · Suggested: <strong>{recommendationMove.move}</strong>.</>
                   : currentMove
                     ? <>Played: <strong>{currentMove.san}</strong>.</>
-                    : "Click a piece, then a square to explore the position."}
+                    : "Select a move from the list to inspect its position."}
               </div>
+              {finished && game.learning && (
+                <section className="game-learning" aria-live="polite">
+                  <div className="section-eyebrow"><span className="eyebrow-line" /> THE GAME'S TAKEAWAY</div>
+                  <h2>One thing to remember</h2>
+                  <p>{game.learning}</p>
+                </section>
+              )}
             </div>
 
             <aside className="move-panel">
@@ -1019,8 +1008,8 @@ function App() {
           </div>
 
           <footer className="workspace-footer">
-            <span><span className="status-light" /> {game.moves.length === 0 ? "Waiting for a game" : loading ? `Analyzing position ${progress.done} of ${progress.total}` : analysisError ? "Engine unavailable" : "Analysis complete"}</span>
-            <span>Explanations are based on move-by-move engine analysis.</span>
+            <span><span className="status-light" /> {game.moves.length === 0 ? "Choose a game to begin" : loading ? `Analyzing position ${progress.done} of ${progress.total}` : analysisError ? "Engine unavailable" : "Analysis complete"}</span>
+            <span>Stockfish 19 Lite · Depth 10 · Analysis runs in your browser</span>
           </footer>
         </section>
       </main>}

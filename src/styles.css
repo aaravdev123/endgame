@@ -124,7 +124,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .coord-dark { fill: #6d7b5a; }
 .coord-light { fill: #d8ddca; }
 .chess-piece { font-family: "Arial Unicode MS", "Noto Sans Symbols 2", "DejaVu Sans", serif; font-size: 79px; user-select: none; pointer-events: none; }
-.piece-white { fill: #f5f2e4; }
+.piece-white { fill: #fffdf4; filter: drop-shadow(0 1px 2px #182014c9); }
 .piece-black { fill: #171b14; }
 .board-arrow line { stroke-width: 14; stroke-opacity: .66; stroke-linecap: round; filter: drop-shadow(0 1px 2px #15170f); }
 .engine-arrow line { stroke: #f6d84a; }
@@ -265,7 +265,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .hero-square-dark { background: #546346; }
 .hero-square-marked { background: #b0bf60; }
 .hero-piece-light, .hero-piece-dark { position: relative; z-index: 2; font-family: "Arial Unicode MS", "Noto Sans Symbols 2", "DejaVu Sans", serif; font-size: clamp(18px, 3.2vw, 37px); line-height: 1; filter: drop-shadow(0 1px 1px #1117); }
-.hero-piece-light { color: #f5f2e4; }
+.hero-piece-light { color: #fffdf4; filter: drop-shadow(0 1px 2px #182014d9); }
 .hero-piece-dark { color: #171b14; }
 .hero-callout { position: absolute; z-index: 2; padding: 10px 12px; border: 1px solid #414a37; border-radius: 5px; background: #191d19ef; box-shadow: 0 8px 20px #0005; }
 .hero-callout strong { color: #e1e8d8; font-family: "DM Sans", sans-serif; font-size: 11px; font-weight: 600; white-space: nowrap; }

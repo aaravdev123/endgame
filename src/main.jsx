@@ -240,9 +240,27 @@ function Chessboard({ fen, lastMove, nextMove, engineMove, moveMarker, endingMar
     const fromY = (8 - Number(match[1][1])) * 100 + 50;
     const toX = "abcdefgh".indexOf(match[2][0]) * 100 + 50;
     const toY = (8 - Number(match[2][1])) * 100 + 50;
+    const fileDistance = Math.abs(toX - fromX);
+    const rankDistance = Math.abs(toY - fromY);
+    const isKnightMove = (fileDistance === 100 && rankDistance === 200)
+      || (fileDistance === 200 && rankDistance === 100);
+    const previousX = fromX;
+    const previousY = isKnightMove ? toY : fromY;
+    const angle = Math.atan2(toY - previousY, toX - previousX);
+    const headLength = 40;
+    const headHalfWidth = 20;
+    const baseX = toX - Math.cos(angle) * headLength;
+    const baseY = toY - Math.sin(angle) * headLength;
+    const normalX = -Math.sin(angle) * headHalfWidth;
+    const normalY = Math.cos(angle) * headHalfWidth;
+    const shaftPath = isKnightMove
+      ? `M ${fromX} ${fromY} L ${fromX} ${toY} L ${baseX} ${baseY}`
+      : `M ${fromX} ${fromY} L ${baseX} ${baseY}`;
+    const arrowHeadPath = `M ${baseX + normalX} ${baseY + normalY} L ${toX} ${toY} L ${baseX - normalX} ${baseY - normalY} Z`;
     return (
       <g key={className} className={`board-arrow ${className}`} aria-label={description} pointerEvents="none">
-        <line x1={fromX} y1={fromY} x2={toX} y2={toY} markerEnd={`url(#${className.includes("played-") ? "played" : "engine"}-arrow-head)`} />
+        <path d={shaftPath} className="board-arrow-shaft" />
+        <path d={arrowHeadPath} className="board-arrow-head" />
       </g>
     );
   };
@@ -266,11 +284,6 @@ function Chessboard({ fen, lastMove, nextMove, engineMove, moveMarker, endingMar
   return (
     <div className="board-frame">
       <svg className="chessboard" viewBox="0 0 800 800" role="grid" aria-label="Chessboard">
-        <defs>
-          <marker id="engine-arrow-head" markerWidth="20" markerHeight="20" refX="15" refY="10" orient="auto" markerUnits="userSpaceOnUse">
-            <path d="M0,0 L0,20 L20,10 Z" className="engine-arrow-head" />
-          </marker>
-        </defs>
         {board.flatMap((rank, row) =>
           rank.map((piece, col) => {
             const square = `${"abcdefgh"[col]}${8 - row}`;
@@ -330,7 +343,7 @@ function Chessboard({ fen, lastMove, nextMove, engineMove, moveMarker, endingMar
                     {endingMarker.mode === "checkmate" ? (
                       <>
                         <path className="ending-ground" d="M-11 10h22" />
-                        <text className="ending-fallen-king" y="7">♚</text>
+                        <text className="ending-fallen-king" x="0" y="7" textAnchor="middle" transform="rotate(65 0 0)">♚</text>
                       </>
                     ) : (
                       <>
@@ -1068,7 +1081,7 @@ function App() {
 
           <footer className="workspace-footer">
             <span><span className="status-light" /> {game.moves.length === 0 ? "Choose a game to begin" : loading ? `Analyzing position ${progress.done} of ${progress.total}` : analysisError ? "Engine unavailable" : "Analysis complete"}</span>
-            <span>Stockfish 19 Lite · Depth 20 · Analysis runs in your browser</span>
+            <span>Stockfish 19 Lite · Depth 13 · Analysis runs in your browser</span>
           </footer>
         </section>
       </main>}

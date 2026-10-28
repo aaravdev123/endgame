@@ -37,7 +37,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .brand-caption { margin-top: 4px; color: #737c71; font-family: "DM Mono", monospace; font-size: 8px; letter-spacing: .14em; }
 
 .ending-marker circle { fill: #e33b3b; stroke: #f37b72; stroke-width: 2; }
-.ending-fallen-king { fill: #111311; font-size: 42px; text-anchor: middle; transform-box: fill-box; transform-origin: center; transform: rotate(72deg) translate(2px, 1px); }
+.ending-fallen-king { fill: #111311; font-family: "DejaVu Sans", "Arial Unicode MS", serif; font-size: 24px; }
 .ending-ground { fill: none; stroke: #111311; stroke-width: 2; stroke-linecap: round; }
 .ending-flag-pole { fill: none; stroke: #f7f7f2; stroke-width: 2; stroke-linecap: round; }
 .ending-white-flag { fill: #fff; stroke: #111311; stroke-width: .8; }
@@ -134,9 +134,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .chess-piece { font-family: "Arial Unicode MS", "Noto Sans Symbols 2", "DejaVu Sans", serif; font-size: 79px; user-select: none; pointer-events: none; }
 .piece-white { fill: #fffdf4; filter: drop-shadow(0 2px 2px #10140d); }
 .piece-black { fill: #171b14; }
-.board-arrow line { stroke-width: 14; stroke-opacity: .66; stroke-linecap: round; filter: drop-shadow(0 1px 2px #15170f); }
-.engine-arrow line { stroke: #f6d84a; }
-.engine-arrow-head { fill: #f6d84a; fill-opacity: .78; }
+.board-arrow-shaft { fill: none; stroke-width: 14; stroke-opacity: .66; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 1px 2px #15170f); }
+.board-arrow-head { stroke: none; opacity: .78; filter: drop-shadow(0 1px 2px #15170f); }
+.engine-arrow .board-arrow-shaft { stroke: #f6d84a; }
+.engine-arrow .board-arrow-head { fill: #f6d84a; }
 .board-move-marker { filter: drop-shadow(0 1px 2px #1119); }
 .board-move-marker circle { fill: currentColor; stroke: #20251e; stroke-width: 3; }
 .board-move-marker text { fill: #172017; text-anchor: middle; dominant-baseline: central; font-family: system-ui, sans-serif; font-size: 15px; font-weight: 700; }

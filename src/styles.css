@@ -29,10 +29,18 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .topbar { height: 74px; border-bottom: 1px solid var(--line); background: rgba(17, 19, 17, .9); }
 .topbar-inner { height: 100%; max-width: 1600px; margin: auto; padding: 0 34px; display: flex; align-items: center; }
 .brand-home { display: block; padding: 0; border: 0; background: transparent; text-align: left; cursor: pointer; }
-.brand-mark { width: 35px; height: 35px; display: grid; place-items: center; border: 1px solid #53633c; border-radius: 10px; background: #22291b; color: var(--lime); font-size: 24px; line-height: 1; }
-.brand-mark span { transform: translateY(-1px); }
+.brand-lockup { display: flex; align-items: center; gap: 12px; }
+.brand-mark { width: 35px; height: 35px; display: grid; place-items: center; border: 1px solid #53633c; background: #22291b; overflow: hidden; }
+.brand-mark-svg { display: block; width: 100%; height: 100%; border-radius: 0; }
+.brand-text { display: flex; flex-direction: column; }
 .brand-name { font-size: 17px; line-height: 1.15; font-weight: 800; letter-spacing: -.06em; }
 .brand-caption { margin-top: 4px; color: #737c71; font-family: "DM Mono", monospace; font-size: 8px; letter-spacing: .14em; }
+
+.ending-marker circle { fill: #e33b3b; stroke: #f37b72; stroke-width: 2; }
+.ending-fallen-king { fill: #111311; font-size: 42px; text-anchor: middle; transform-box: fill-box; transform-origin: center; transform: rotate(72deg) translate(2px, 1px); }
+.ending-ground { fill: none; stroke: #111311; stroke-width: 2; stroke-linecap: round; }
+.ending-flag-pole { fill: none; stroke: #f7f7f2; stroke-width: 2; stroke-linecap: round; }
+.ending-white-flag { fill: #fff; stroke: #111311; stroke-width: .8; }
 .top-nav { display: flex; align-items: stretch; gap: 27px; height: 100%; margin-left: 54px; }
 .top-nav button { position: relative; display: flex; align-items: center; padding: 0; border: 0; background: transparent; color: #919890; font-size: 12px; cursor: pointer; transition: color .18s ease; }
 .top-nav button:hover, .top-nav .nav-active { color: #f0f3eb; }
@@ -307,9 +315,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .game-learning h2 { margin: 7px 0 5px; color: #e8edde; font-family: "Manrope", sans-serif; font-size: 14px; font-weight: 700; letter-spacing: -.03em; }
 .game-learning p { margin: 0; color: #aab4a2; font-size: 11px; line-height: 1.65; }
 .home-footer { min-height: 60px; display: flex; align-items: center; justify-content: space-between; gap: 10px; border-top: 1px solid #282d28; color: #777f74; font-size: 9px; }
-.home-footer .brand-mark { width: 26px; height: 26px; border-radius: 7px; font-size: 19px; }
-.home-footer .brand-name { font-size: 13px; }
-.home-footer .brand-caption { font-size: 6px; }
+.home-footer .brand-wordmark { width: 170px; height: 31px; }
+.home-footer .brand-wordmark text { font-size: 24px; }
+.home-footer .brand-caption { font-size: 8px; }
 .home-footer > span:last-child { font-family: "DM Mono", monospace; font-size: 7px; letter-spacing: .1em; }
 
 @media (min-width: 1450px) {
@@ -319,6 +327,12 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 @media (max-width: 1050px) {
+  .topbar-inner { padding-right: 20px; padding-left: 20px; }
+  .brand-wordmark { width: 170px; height: 31px; }
+  .brand-wordmark text { font-size: 24px; }
+  .top-nav { gap: 17px; margin-left: 24px; }
+  .top-nav button { white-space: nowrap; }
+  .header-right { gap: 10px; }
   .workspace { padding-right: 20px; padding-left: 20px; }
   .review-area { padding-top: 23px; padding-bottom: 16px; }
   .board-layout { grid-template-columns: minmax(250px, 1fr) minmax(220px, .82fr); gap: 14px; }
@@ -358,9 +372,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 @media (max-width: 620px) {
   .topbar { height: 62px; }
   .topbar-inner { padding: 0 14px; }
-  .brand-mark { width: 31px; height: 31px; font-size: 21px; }
-  .brand-name { font-size: 15px; }
-  .brand-caption { font-size: 7px; }
+  .brand-wordmark { width: 160px; height: 30px; }
+  .brand-wordmark text { font-size: 24px; }
+  .brand-caption { font-size: 8px; letter-spacing: .2em; }
   .top-nav { gap: 13px; margin-left: auto; margin-right: 11px; }
   .top-nav button { font-size: 10px; }
   .top-nav button:last-child { display: none; }
@@ -460,4 +474,12 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   .header-cta { font-size: 10px; }
   .home-hero-copy > p { font-size: 15px; }
   .home-section-heading p { font-size: 12px; }
+}
+
+.brand-lockup .brand-name { font-size: 17px; line-height: 1.15; font-weight: 800; letter-spacing: -.06em; }
+.brand-lockup .brand-caption { margin-top: 4px; color: #737c71; font-family: "DM Mono", monospace; font-size: 8px; letter-spacing: .14em; }
+.home-footer .brand-lockup .brand-caption { font-size: 8px; }
+
+@media (max-width: 620px) {
+  .brand-lockup .brand-caption { font-size: 8px; }
 }

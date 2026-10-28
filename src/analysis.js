@@ -5,7 +5,7 @@ const ENGINE_URL = new URL(
   "../vendor/stockfish/stockfish-19-lite-single.js",
   import.meta.url,
 );
-const ANALYSIS_DEPTH = 10;
+const ANALYSIS_DEPTH = 20;
 
 export function winChance(cp) {
   return 50 + 50 * (2 / (1 + Math.exp(-0.003682 * cp)) - 1);

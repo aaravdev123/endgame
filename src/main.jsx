@@ -72,6 +72,8 @@ function headersFromPgn(pgn) {
 
 function makeReviewGame(pgn, details = {}) {
   const headers = headersFromPgn(pgn);
+  const resultToken = pgn.match(/(?:^|\s)(1-0|0-1|1\/2-1\/2|\*)\s*$/)?.[1];
+  if (!headers.Result && resultToken) headers.Result = resultToken;
   const startFen =
     headers.SetUp === "1" && headers.FEN
       ? headers.FEN
@@ -129,6 +131,35 @@ function describePosition(cp) {
   return `${cp > 0 ? "White" : "Black"} is winning`;
 }
 
+function getEndingMarker(game) {
+  const finalPosition = new Chess(game.fens.at(-1) ?? game.startFen);
+  const board = finalPosition.board();
+  let mode;
+  let losingColor;
+
+  if (finalPosition.isCheckmate()) {
+    mode = "checkmate";
+    losingColor = finalPosition.turn();
+  } else {
+    const result = (game.headers.Result || game.result || "").trim();
+    const termination = (game.headers.Termination || "").toLowerCase();
+    const isResignation = /resign|forfeit|abandon|out of time|timeout|time forfe/.test(termination)
+      || result === "1-0"
+      || result === "0-1";
+    if (!isResignation) return null;
+    mode = "resign";
+    losingColor = result === "1-0" ? "b" : result === "0-1" ? "w" : finalPosition.turn();
+  }
+
+  const kingSquare = board.flatMap((rank, row) =>
+    rank.map((piece, col) => piece?.type === "k" && piece.color === losingColor
+      ? `${"abcdefgh"[col]}${8 - row}`
+      : null),
+  ).find(Boolean);
+
+  return kingSquare ? { mode, square: kingSquare } : null;
+}
+
 function Icon({ name, size = 18, className = "" }) {
   const paths = {
     arrow: <><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></>,
@@ -163,10 +194,18 @@ function Icon({ name, size = 18, className = "" }) {
 
 function Brand() {
   return (
-    <div className="flex items-center gap-3">
-      <div className="brand-mark"><span>♞</span></div>
-      <div>
-        <div className="brand-name font-display">endgame</div>
+    <div className="brand-lockup">
+      <div className="brand-mark" aria-label="Endgame logo mark">
+        <svg className="brand-mark-svg" viewBox="0 0 32 32" role="img" aria-hidden="true">
+          <rect x="1.5" y="1.5" width="29" height="29" rx="7" fill="#111311" stroke="#53633c" strokeWidth="1.2" />
+          <rect x="1.5" y="1.5" width="14" height="14" fill="#c5f36b" />
+          <rect x="16.5" y="16.5" width="14" height="14" fill="#c5f36b" />
+          <rect x="16.5" y="1.5" width="14" height="14" fill="#111311" />
+          <rect x="1.5" y="16.5" width="14" height="14" fill="#111311" />
+        </svg>
+      </div>
+      <div className="brand-text">
+        <div className="brand-name">endgame</div>
         <div className="brand-caption">GAME REVIEW STUDIO</div>
       </div>
     </div>
@@ -188,7 +227,7 @@ function MoveBadge({ category, compact = false }) {
   );
 }
 
-function Chessboard({ fen, lastMove, nextMove, engineMove, moveMarker, onSquareClick }) {
+function Chessboard({ fen, lastMove, nextMove, engineMove, moveMarker, endingMarker, onSquareClick }) {
   const board = useMemo(() => {
     const chess = new Chess(fen);
     return chess.board();
@@ -277,6 +316,29 @@ function Chessboard({ fen, lastMove, nextMove, engineMove, moveMarker, onSquareC
                   >
                     {PIECES[piece.type]}
                   </text>
+                )}
+                {endingMarker?.square === square && (
+                  <g
+                    className={`ending-marker ending-marker-${endingMarker.mode}`}
+                    transform={`translate(${col * 100 + 78} ${row * 100 + 22})`}
+                    role="img"
+                    aria-label={endingMarker.mode === "checkmate" ? "Checkmate" : "Resignation"}
+                    pointerEvents="none"
+                  >
+                    <title>{endingMarker.mode === "checkmate" ? "Checkmate" : "Resignation"}</title>
+                    <circle r="18" />
+                    {endingMarker.mode === "checkmate" ? (
+                      <>
+                        <path className="ending-ground" d="M-11 10h22" />
+                        <text className="ending-fallen-king" y="7">♚</text>
+                      </>
+                    ) : (
+                      <>
+                        <path className="ending-flag-pole" d="M-5-11v22" />
+                        <path className="ending-white-flag" d="M-4-10h13l-3 5 3 5H-4z" />
+                      </>
+                    )}
+                  </g>
                 )}
               </g>
             );
@@ -903,6 +965,7 @@ function App() {
                   nextMove={nextMove}
                   engineMove={recommendationMove}
                   moveMarker={currentMove}
+                  endingMarker={finished ? getEndingMarker(game) : null}
                   onSquareClick={(direction) => goTo(currentPly + (direction === "next" ? 1 : -1))}
                 />
                 <EvaluationBar cp={activeCp} sideToMove={toMove} />
@@ -1005,7 +1068,7 @@ function App() {
 
           <footer className="workspace-footer">
             <span><span className="status-light" /> {game.moves.length === 0 ? "Choose a game to begin" : loading ? `Analyzing position ${progress.done} of ${progress.total}` : analysisError ? "Engine unavailable" : "Analysis complete"}</span>
-            <span>Stockfish 19 Lite · Depth 10 · Analysis runs in your browser</span>
+            <span>Stockfish 19 Lite · Depth 20 · Analysis runs in your browser</span>
           </footer>
         </section>
       </main>}

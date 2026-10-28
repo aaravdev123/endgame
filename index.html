@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#111311" />
+    <meta
+      name="description"
+      content="Review chess games with Stockfish-powered analysis."
+    />
+    <title>Endgame — Chess review</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              ink: "#111311",
+              panel: "#191c19",
+              line: "#292d29",
+              lime: "#c5f36b",
+              muted: "#8d958d",
+            },
+            fontFamily: {
+              sans: ["DM Sans", "sans-serif"],
+              display: ["Manrope", "sans-serif"],
+              mono: ["DM Mono", "monospace"],
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="stylesheet" href="./src/styles.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "react": "https://esm.sh/react@18.3.1",
+          "react-dom/client": "https://esm.sh/react-dom@18.3.1/client?external=react",
+          "chess.js": "https://esm.sh/chess.js@1.4.0"
+        }
+      }
+    </script>
+    <script src="https://unpkg.com/@babel/standalone@7.26.10/babel.min.js"></script>
+  </head>
+  <body class="bg-ink text-white antialiased">
+    <div id="root">
+      <main id="startup-message" style="max-width: 640px; margin: 12vh auto; padding: 28px; color: #e8ebdf; font: 16px/1.6 system-ui, sans-serif;">
+        <h1 style="font-size: 24px;">Starting Endgame…</h1>
+        <p>If this message stays on screen, open <strong>Start Chess Review.command</strong> in this folder instead of opening this HTML file directly.</p>
+        <p>The app needs a local web server to load its modules and Stockfish engine.</p>
+      </main>
+    </div>
+    <script type="text/babel" data-type="module" src="./src/main.jsx"></script>
+  </body>
+</html>
